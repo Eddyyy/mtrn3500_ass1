@@ -1,0 +1,61 @@
+Functions
+
+PCM3718
+  PCM3718(EmbeddedOperations *eops, uint32_t base_addr);
+  PCM3718(EmbeddedOperations *eops, uint32_t base_addr, uint8_t analog_range);
+	//constructors: the default analog range is +- 5V
+	//analog_range is the 4 bit range code specified in the manual
+
+  uint16_t digitalInput();
+	//read in the high and low byte input, combine them and return the result
+
+  uint8_t digitalByteInput(bool high_byte);
+	//return the byte as determined by the input argument (1 = high byte, 0 = low byte)
+
+  bool digitalBitInput(uint8_t bit);
+	//Return the value of the bit as determined by the input argument (value between 0-15)
+
+  void digitalOutput(uint16_t value);
+	//Output the provided value to both low and high channels
+
+  void digitalByteOutput(bool high_byte, uint8_t value);
+	//Output the provided value to the channel determined by the boolean input (1 = high byte, 0 = low byte)
+
+  void setRange(uint8_t new_analog_range);
+	//Change the range for analog input to be the provided range code (look in manual for range definitions)
+
+  double analogInput(uint8_t channel) const;
+	//Receive the input in the analog channel provided, convert it to a voltage (determined by the setRange) and return it
+	//You are expected to read the analog input from any channel 0-15
+
+  friend std::ostream& operator<<(std::ostream& output, const PCM3718& pcm)
+	//Have it output in the following style, with voltages displayed to 2 d.p. "channel 0: <channel 0 voltage>\tchannel 1: <channel 1 voltage>\n"
+
+MSIP404
+  MSIP404(EmbeddedOperations *eops, uint32_t base_addr);
+	//constructor
+
+  void resetChannel(uint8_t channel);
+	//Reset the channel determined by the input value
+
+  int32_t readChannel(int8_t channel);
+	//Read the channel determined by the input value
+	//You are expected to be able to read channels 0-7. Assume the same pattern as channel 0-3 for channels 4-7.
+  
+  bool readIndex(uint8_t channel);
+	//Read the index bit for the channel determined by the input value
+	//You may assume the encoder index pulse base address is always 0x800.
+	//You are expected to read the index pulses for channels 0-2 ONLY
+
+  bool operator!();
+	//Reset all (8) channels
+
+DAC
+  DAC06(EmbeddedOperations *eops, uint32_t base_addr);
+	//constructor
+
+  void analogOutputRaw(uint8_t channel, uint16_t value);
+	//Output the raw value provided to the specified channel in the DAC
+  
+  void analogOutputVoltage(uint8_t channel, double desired_voltage);
+	//Output the desired voltage provided to the specified channel in the DAC
