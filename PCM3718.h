@@ -2,8 +2,10 @@
 #define PCM3718_MODULE_H
 
 #include <stdint.h>
+#include <unistd.h>
 #include <sys/io.h>
 #include <iostream>
+#include <cmath>
 
 #include "EmbeddedOperations.h"
 
@@ -20,7 +22,7 @@ namespace EmbeddedDevice {
     public:
       PCM3718(EmbeddedOperations *eops, uint32_t base_addr);
       PCM3718(EmbeddedOperations *eops, uint32_t base_addr, uint8_t analog_range);
-      ~PCM3718();
+      ~PCM3718() {}
 
       uint16_t digitalInput();
       uint8_t digitalByteInput(bool high_byte);
@@ -29,15 +31,14 @@ namespace EmbeddedDevice {
       void digitalByteOutput(bool high_byte, uint8_t value);
       void setRange(uint8_t new_analog_range);
       double analogInput(uint8_t channel) const;
-      friend std::ostream& operator<<(std::ostream& output, const PCM3718& pcm) {
-        return output;
-      }
+      friend std::ostream& operator<<(std::ostream& output, const PCM3718& pcm);
 
     private:
       // NOTE: All sys/io function calls must be made through the EmbeddedOperations class
       EmbeddedOperations *eops;
       uint32_t baseAddr;
       uint8_t analogRange;
+      double mapVal(double input, double minSrc, double maxSrc, double minDest, double maxDest) const;
   };
 
   // For newer versions of g++, a friend function needs a matching declaration provided
