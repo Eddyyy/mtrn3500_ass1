@@ -19,7 +19,7 @@ namespace EmbeddedDevice {
   class MSIP404 {
     public:
       MSIP404(EmbeddedOperations *eops, uint32_t base_addr);
-      ~MSIP404();
+      ~MSIP404() {};
 
       void resetChannel(uint8_t channel);
       int32_t readChannel(uint8_t channel);

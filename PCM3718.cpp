@@ -119,9 +119,9 @@ double EmbeddedDevice::PCM3718::analogInput(uint8_t channel) const {
     this->eops->outb(0xFF, this->baseAddr+AD_LO_CH_PORT);
 
     //Wait For conversion
-    while (!(this->eops->inb(this->baseAddr+AD_STATUS_PORT) & 1<<4)) {
-        usleep(100);
-    }
+    //while (!(this->eops->inb(this->baseAddr+AD_STATUS_PORT) & 1<<4)) {
+    //    usleep(100);
+    //}
 
     //Read analog
     uint8_t hexInLo = this->eops->inb(this->baseAddr+AD_LO_CH_PORT);

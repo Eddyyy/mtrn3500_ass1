@@ -17,7 +17,7 @@ namespace EmbeddedDevice {
   class DAC06 {
     public:
       DAC06(EmbeddedOperations *eops, uint32_t base_addr);
-      ~DAC06();
+      ~DAC06() {};
 
       void analogOutputRaw(uint8_t channel, uint16_t value);
       void analogOutputVoltage(uint8_t channel, double desired_voltage);
@@ -25,6 +25,8 @@ namespace EmbeddedDevice {
     private:
       // NOTE: All sys/io function calls must be made through the EmbeddedOperations class
       EmbeddedOperations *eops;
+      uint32_t baseAddr;
+      double mapVal(double input, double minSrc, double maxSrc, double minDest, double maxDest);
   };
 }
 

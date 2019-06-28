@@ -22,7 +22,7 @@ namespace EmbeddedDevice {
     public:
       PCM3718(EmbeddedOperations *eops, uint32_t base_addr);
       PCM3718(EmbeddedOperations *eops, uint32_t base_addr, uint8_t analog_range);
-      ~PCM3718() {}
+      ~PCM3718() {};
 
       uint16_t digitalInput();
       uint8_t digitalByteInput(bool high_byte);
