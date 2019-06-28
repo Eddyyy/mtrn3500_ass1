@@ -18,11 +18,11 @@ EmbeddedDevice::DAC06::DAC06(EmbeddedOperations *eops, uint32_t base_addr) {
 }
 
 void EmbeddedDevice::DAC06::analogOutputRaw(uint8_t channel, uint16_t value) {
-    if (channel <= 5 && channel >= 0 && value <= 0x0FFF) {
-        this->eops->outb((uint8_t)(value & 0x00FF), this->baseAddr+value*2);
-        this->eops->outb((uint8_t)(value & 0x0F00), this->baseAddr+value*2+1);
-        this->eops->inb(this->baseAddr+value*2);
-        this->eops->inb(this->baseAddr+value*2+1);
+    if (channel <= 0x05 && value <= 0x0FFF) {
+        this->eops->outb((uint8_t)(value & 0x00FF), this->baseAddr+channel*2);
+        this->eops->outb((uint8_t)((value & 0x0F00)>>8), this->baseAddr+channel*2+1);
+        this->eops->inb(this->baseAddr+channel*2);
+        this->eops->inb(this->baseAddr+channel*2+1);
     }
 }
 
@@ -31,6 +31,6 @@ double EmbeddedDevice::DAC06::mapVal(double input, double minSrc, double maxSrc,
 }
 
 void EmbeddedDevice::DAC06::analogOutputVoltage(uint8_t channel, double desired_voltage) {
-    uint16_t rawValue = (uint16_t)this->mapVal(desired_voltage, MIN_12BIT, MAX_12BIT, MIN_DAC_V, MAX_DAC_V);
+    uint16_t rawValue = (uint16_t)this->mapVal(desired_voltage, MIN_DAC_V, MAX_DAC_V, MIN_12BIT, MAX_12BIT);
     this->analogOutputRaw(channel, rawValue);
 }

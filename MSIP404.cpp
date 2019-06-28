@@ -22,24 +22,24 @@ EmbeddedDevice::MSIP404::MSIP404(EmbeddedOperations *eops, uint32_t base_addr) {
 }
 
 void EmbeddedDevice::MSIP404::resetChannel(uint8_t channel) {
-    if (channel <= 0x07 && channel >= 0x00) {
+    if (channel <= 0x07) {
         this->eops->outb(0xFF, this->baseAddr+channel);
     }
 }
 int32_t EmbeddedDevice::MSIP404::readChannel(uint8_t channel) {
-    if (channel <= 0x07 && channel >= 0x00) {
-        int32_t inLoByte =  (int32_t) this->eops->inb(this->baseAddr+channel*4);
-        int32_t in2ndByte = (int32_t) this->eops->inb(this->baseAddr+channel*4+1);
-        int32_t in3rdByte = (int32_t) this->eops->inb(this->baseAddr+channel*4+2);
+    if (channel <= 0x07) {
         int32_t inHiByte =  (int32_t) this->eops->inb(this->baseAddr+channel*4+3);
+        int32_t in3rdByte = (int32_t) this->eops->inb(this->baseAddr+channel*4+2);
+        int32_t in2ndByte = (int32_t) this->eops->inb(this->baseAddr+channel*4+1);
+        int32_t inLoByte =  (int32_t) this->eops->inb(this->baseAddr+channel*4);
 
-        return inLoByte + (in2ndByte<<(sizeof(uint8_t))) + (in3rdByte<<(2*sizeof(uint8_t))) + (inHiByte<<(3*sizeof(uint8_t)));
+        return inLoByte + (in2ndByte<<8) + (in3rdByte<<(2*8)) + (inHiByte<<(3*8));
     }
     return -1;
 }
 
 bool EmbeddedDevice::MSIP404::readIndex(uint8_t channel) {
-    if (channel <= 0x02 && channel >= 0x00) {
+    if (channel <= 0x02) {
         if (!channel%2) {
             return this->eops->inb(INDEX_BASE_ADDRESS+channel/2) & 1<<EVEN_CH_INDEX_OFFSET;
         } else {

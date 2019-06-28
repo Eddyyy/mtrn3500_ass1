@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <sys/io.h>
+#include <iostream>
 #include "EmbeddedOperations.h"
 
 /*

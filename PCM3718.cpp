@@ -2,8 +2,8 @@
 #include "PCM3718.h"
 
 #define AD_LO_CH_PORT 0x00
-#define AD_RANGE_PORT 0x01
-#define AD_HI_CHSEL_PORT 0x02
+#define AD_HI_RANGE_PORT 0x01
+#define AD_CHSEL_PORT 0x02
 #define DIGI_LO_PORT 0x03
 #define AD_STATUS_PORT 0x08
 #define DIGI_HI_PORT 0x0B
@@ -77,8 +77,8 @@ bool EmbeddedDevice::PCM3718::digitalBitInput(uint8_t bit) {
 
 void EmbeddedDevice::PCM3718::digitalOutput(uint16_t value) {
     //Split value into hi and lo and ouput to respective ports
-    this->eops->outb((uint8_t)(value & 0x0F), this->baseAddr+DIGI_LO_PORT);
-    this->eops->outb((uint8_t)((value & 0xF0)>>8), this->baseAddr+DIGI_HI_PORT);
+    this->eops->outb((uint8_t)(value & 0x00FF), this->baseAddr+DIGI_LO_PORT);
+    this->eops->outb((uint8_t)((value & 0xFF00)>>8), this->baseAddr+DIGI_HI_PORT);
 }
 
 void EmbeddedDevice::PCM3718::digitalByteOutput(bool high_byte, uint8_t value) {
@@ -110,24 +110,23 @@ double EmbeddedDevice::PCM3718::analogInput(uint8_t channel) const {
 
     //Select Channel
     uint8_t channelIn = (channel <= 0x0F) ? (channel | channel<<4) : 0;
-    this->eops->outb(channelIn, this->baseAddr+AD_HI_CHSEL_PORT);
+    this->eops->outb(channelIn, this->baseAddr+AD_CHSEL_PORT);
 
     //Select Range
-    this->eops->outb(this->analogRange, this->baseAddr+AD_RANGE_PORT);
+    this->eops->outb(this->analogRange, this->baseAddr+AD_HI_RANGE_PORT);
 
     //Trigger Conversion
     this->eops->outb(0xFF, this->baseAddr+AD_LO_CH_PORT);
 
     //Wait For conversion
-    //while (!(this->eops->inb(this->baseAddr+AD_STATUS_PORT) & 1<<4)) {
-    //    usleep(100);
-    //}
+    while (!(this->eops->inb(this->baseAddr+AD_STATUS_PORT) & 1<<4)) {
+        usleep(100);
+    }
 
     //Read analog
     uint8_t hexInLo = this->eops->inb(this->baseAddr+AD_LO_CH_PORT);
-    hexInLo = hexInLo>>4;
-    uint8_t hexInHi = this->eops->inb(this->baseAddr+AD_HI_CHSEL_PORT);
-    uint16_t hexInByte = (uint16_t)hexInLo + (((uint16_t)hexInHi)<<4);
+    uint8_t hexInHi = this->eops->inb(this->baseAddr+AD_HI_RANGE_PORT);
+    uint16_t hexInByte = (uint16_t)(hexInLo>>4) + (((uint16_t)hexInHi)<<4);
 
     //Convert to double from range
     bool isUnipolar = (bool)(this->analogRange & 1<<2);
